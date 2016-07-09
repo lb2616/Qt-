@@ -13,13 +13,13 @@ myQtimerWidget::myQtimerWidget(QWidget *parent)
     end = new QPushButton(this);
     end->setText("close");
     QGridLayout *mainLayout = new QGridLayout(this);
-    setMinimumSize(900,900);
+    setMinimumSize(500,500);
     setMaximumSize(900,900);
     mainLayout->addWidget(lineEdit,0,0);
     mainLayout->addWidget(start,1,1);
     mainLayout->addWidget(end,7,1);
     mainLayout->addWidget(lcd,3,0);
-    lcd->setDigitCount(8);
+//    lcd->setDigitCount(8);
     time_clock->start(2000);
     connect(end,SIGNAL(clicked(bool)),this,SLOT(close()));
     connect(start,SIGNAL(clicked(bool)),this,SLOT(starttimer()));
@@ -44,6 +44,7 @@ void myQtimerWidget::sQtime()
 //    lineEdit->show();
 
     QTime time = QTime::currentTime();
+    lcd->setDigitCount(8);
     lcd->display(time.toString("hh:mm:ss"));
 
 }
