@@ -12,7 +12,6 @@ void you_hua(char *p)
 		}	
 		p++;
 	}
-	return;
 }
 
 //模拟与服务器连接函数,动态打印>>

@@ -11,9 +11,7 @@ inputnameerr:
     printf("请输入用户名:");
     fgets(Client.name,30,stdin);
     you_hua(Client.name);
-//    scanf("%s", Client.name);
-//    printf("name = %s\n", Client.name);
-    if (!check_register_name(Client.name))
+    if (!check_input_name(Client.name))
     {
         goto inputnameerr;
     }    
@@ -42,26 +40,29 @@ int ui_login(int sockfd)
     MESSAGE Client;
 //	system("clear");
     printf("==================登录界面========================\n\n");
-    printf("\t帐号或者用户名：");
-    scanf("%d",&Client.pnum);
-    //getchar();
-    setbuf(stdin, NULL);
-    printf("\t密          码：");//printf("fuck\n");
-    fgets(Client.msg, 30, stdin);
-    you_hua(Client.msg);
+    do {
+        printf("\t帐号或者用户名：");
+        fgets(Client.name, 30, stdin);
+        you_hua(Client.name);
+    }while(!check_input_name(Client.name));
+//    setbuf(stdin, NULL);
+    do {
+        printf("\t密          码：");
+        fgets(Client.msg, 30, stdin);
+        you_hua(Client.msg);
+    }while(!check_input_pwd(Client.msg));
     printf("-----------------------------------\n");
 //    pnum0=Client.pnum;                            //用全局变量保存登录者的帐号
     strcpy(Client.flag,"登录");
     printf("正在连接服务器，请稍等.\n");
     write(sockfd,&Client,sizeof(Client));        //向服务器发送信息，请求登录
-    return ;
+    return 1;
 }
 
 //3.登录注册总界面
 int ui_register_login(int sockfd)
 {
     int iChoice;
-    MESSAGE buf;
     do
     {
         //system("clear");
@@ -78,18 +79,14 @@ int ui_register_login(int sockfd)
     {
         case 1:
             ui_login(sockfd);
-//            strcpy(buf.flag, "登录");
             break;
         case 2:
             ui_register(sockfd);
-//            strcpy(buf.flag, "注册");
             break;
         case 0:
             //Exit(sockfd);
-//            strcpy(buf.flag, "退出");
             break;
     }
-//    read(sockfd, &buf, sizeof(buf));
     return iChoice;
 }
 
