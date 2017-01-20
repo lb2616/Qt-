@@ -91,27 +91,75 @@ int ui_register_login(int sockfd)
 }
 
 //4.私聊界面
-int ui_private_chat()
+int ui_private_chat(int sockfd )
 {
     return 1;
 }
 
 //5.群聊界面
-int ui_group_chat()
+int ui_group_chat(int sockfd)
 {
+    MESSAGE Client;
+    memset(&Client, 0, sizeof(Client));
+    while(1)
+    {
+
+        write(sockfd, &Client, sizeof(Client));
+    }
     return 1;
 }
 
 //6.聊天主界面
-int ui_mainchat()
+int ui_mainchat(int sockfd)
 {
+    int iChoice;
+    printf("===============聊天选项==============\n");
+    printf("\t1.私聊\n");
+    printf("\t2.群聊\n");
+    printf("\t3.查看聊天记录\n");
+    printf("\t4.查看在线人数\n");
+    printf("\t5.文件传输下载\n");
+    printf("\t0.返回\n");
+    printf("=====================================\n");
+    printf("\t请选择:");
+    iChoice = input_digit('0', '5');
+    switch(iChoice)
+    {
+        case 1:
+            ui_private_chat(sockfd);
+            break;
+        case 2:
+            ui_group_chat(sockfd);
+            break;
+        case 3:
+        //    Record(sockfd);
+            break;
+        case 4:
+        //    Record(sockfd);
+            break;
+        case 5:
+        //    Record(sockfd);
+            break;
+        case 0:
+            ui_main(sockfd);
+            break;
+    }
     return 1;
 }
 
 //7.主功能界面
-int ui_main()
+int ui_main(int sockfd)
 {
     return 1;
 }
 
+int Exit(int sockfd)
+{
+    MESSAGE Client;
+    strcpy(Client.flag,"退出");
+//	Client.pnum = pnum0;
+    write(sockfd,&Client,sizeof(Client));
+    close(sockfd);
+    exit(0);
+}
 

@@ -89,6 +89,9 @@ void you_hua(char *p);
 
 void dynamic_print();
 
+//处理键盘输入字符的函数，返回值为int型的
+int input_digit(char left, char right);
+
 #endif // DATA_CLIENT_H_INCLUDED
 
 

@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <assert.h>
 #include <time.h>
+#include <fcntl.h>
+
 
 #define IPADDR      "127.0.0.1"
 #define PORT        8787
@@ -22,7 +24,8 @@
 #define SIZE        10
 #define ISFALSE 0
 #define ISTRUE 1
-
+#define ERROR 0
+#define OK 1
 typedef int Status;
 typedef struct server_context_st
 {
@@ -42,26 +45,28 @@ typedef struct reg_person_info
     int logincounts;         /*登录次数*/
     char lastlogintime[40];  /*上次登录的时间*/
 }reg_person_info;
+
 /*
 //操作信息结构体
-typedef struct MESSAGE    
+typedef struct MESSAGE
 {
     int  pnum;           //归属人编号
     int  num;            //好友（其他人）编号
     char name[64];       //归属人姓名
     char msg[MAXLINE];   //发送消息的主体
-    char regtime[40];    //用户注册时间
     char flag[50];
+    char regtime[40];    //用户注册时间
     int  state;         //在线状态
     int  clientfd;
-    char IP[30];        
+    char IP[30];
 }MESSAGE;
 */
+
 
 //操作信息结构体
 typedef struct MESSAGE
 {
-//    int  pnum;           //归属人编号
+    int  pnum;           //归属人编号
 //    int  num;            //好友（其他人）编号
     char flag[50];
     char name[64];       //归属人姓名
@@ -72,15 +77,16 @@ typedef struct MESSAGE
 //    char IP[30];
 }MESSAGE;
 
+
 /*
 //登录信息
 typedef struct logmes
 {
-	int id;                  //编号
-	char name[30];           //登录人员的姓名
-	char passwd[30];         //登录人员的密码
-	int logincounts;         //登录次数
-	char lastlogintime[40];  //上次登录的时间
+    int id;                  //编号
+    char name[30];           //登录人员的姓名
+    char passwd[30];         //登录人员的密码
+    int logincounts;         //登录次数
+    char lastlogintime[40];  //上次登录的时间
 }LOGMES;
 */
 
@@ -106,8 +112,10 @@ void judge_allocate(Login_STNODE *p);
 
 void judge_openfile(char filename[], FILE *fp);
 
-#endif // DATA_SERVER_H
+Login_STNODE * readfiletolist_for_login(char filename[30]);
 
+void print_personinfo(Login_STNODE *head);
+#endif // DATA_SERVER_H
 
 
 
