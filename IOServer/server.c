@@ -1,6 +1,7 @@
 #include "server.h"
 
 server_context_st *s_srv_ctx = NULL;
+char server_cmd[40];
 
 /*
 服务器初始化失败的话，释放分配的内存
@@ -128,8 +129,10 @@ ACCEPT:
 /*
     向客户端发送信息
 */
-int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head)
+int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *online_head)
 {
+    online_person_info message;
+    memset(&message, 0, sizeof(message));
     if (0 == strcmp(buf.flag, "注册"))
     {
 
@@ -139,18 +142,28 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head)
         printf(" :%s\n", buf.name);
         printf(" :%s\n", buf.msg);
         printf("writefile start\n");
+        reg_person_info user_info;
+        user_info.reg_id = 1000;
+        strcpy(user_info.reg_name, buf.name);
+        strcpy(user_info.reg_pwd, buf.msg);
+        gettime(user_info.reg_time);
+        add_registerperson(head, user_info);
         write_register_table(buf);
+        print_personinfo(head);
         printf("writefile end\n");
     }
     else if (0 == strcmp(buf.flag, "登录"))
     {
         printf("in login cases, revf buf flag is %s\n", buf.flag);
-        int pass_check = check_client_logic_request(head, buf);
+        int pass_check = check_client_login_request(head, buf);
         printf("pass_check = %d\n",pass_check);
         if (pass_check)
         {
             strcpy(buf.flag, "登录成功");
             write(fd, &buf, sizeof(buf));
+            client_login_success(fd, online_head, &message, buf);
+            online_client(online_head, &message);
+            print_online_client(online_head);
         }
         else
         {
@@ -158,14 +171,18 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head)
             write(fd, &buf,sizeof(buf));
         }
     }
+    else if (0 == strcmp(buf.flag, "群聊"))
+    {
+        printf("start %s", buf.flag);
 
+    }
     return 0;
 }
 
 /*
     接收客户端的信息
 */
-void recv_client_msg(fd_set *readfds,Login_STNODE * head)
+void recv_client_msg(fd_set *readfds,Login_STNODE * head, success_login *online_head)
 {
     int i = 0, n = 0;
     int clifd;
@@ -190,28 +207,28 @@ void recv_client_msg(fd_set *readfds,Login_STNODE * head)
                 close(clifd);                      // 关闭描述符
                 s_srv_ctx->clifds[i] = -1;         // 将描述符设置为-1
                 continue;
-            }
+            }printf(" 正在通信的描述符号为 clifd = %d\n", clifd);
             printf("hanle_client start\n");
-            handle_client_msg(clifd, message, head);
+            handle_client_msg(clifd, message, head, online_head);
         }
     }
 }
 
-void handle_client_proc(int srvfd, Login_STNODE *head)
+void handle_client_proc(int srvfd, Login_STNODE *head, success_login *online_head)
 {
     int  clifd = -1;
     int  retval = 0;
     fd_set *readfds = &s_srv_ctx->allfds;
 //    struct timeval tv;
     int i = 0;
-
+printf("libo\n");
     while (1) {
         /*每次调用select前都要重新设置文件描述符和时间，因为事件发生后，文件描述符和时间都被内核修改啦*/
         FD_ZERO(readfds);
         /*添加监听套接字*/
         FD_SET(srvfd, readfds);
         s_srv_ctx->maxfd = srvfd;
-
+printf("fuck!\n");
 //        tv.tv_sec = 30;
 //        tv.tv_usec = 0;
         /*添加客户端套接字*/
@@ -226,27 +243,43 @@ void handle_client_proc(int srvfd, Login_STNODE *head)
             s_srv_ctx->maxfd = (clifd > s_srv_ctx->maxfd ? clifd : s_srv_ctx->maxfd);
         }
         printf("start select!\n");
+        if (0 == strcmp("exit", server_cmd))
+        {
+            strcpy(server_cmd, "\0");
+            destroy_Login_STNODE(head);
+            destroy_success_login(online_head);
+            server_uninit();
+            exit(0);
+        }
         /*开始轮询接收处理服务端和客户端套接字*/
         retval = select(s_srv_ctx->maxfd + 1, readfds, NULL, NULL, NULL); // 如果是监听套接字就绪,说明有新的连接请求
-        if (-1 == retval)
+//        if (-1 == retval)
+//        {
+//            fprintf(stderr, "select error:%s.\n", strerror(errno));
+//            return;
+//        }
+        if (0 >= retval)
         {
-            fprintf(stderr, "select error:%s.\n", strerror(errno));
-            return;
-        }
-        if (0 == retval)
-        {
-            fprintf(stdout, "select is timeout.\n");
-            continue;
+            if(errno == EINTR)
+            {
+                fprintf(stdout, "select is interrupt.\n");
+                continue;
+            }
+            else
+            {
+                break;
+            }
         }
         if (FD_ISSET(srvfd, readfds)) /*判断客户端套接字是否有数据*/
         {
             printf("*监听客户端请求*\n");
             accept_client_proc(srvfd);/*监听客户端请求*/
+            printf("接受的套接字是 %d \n",srvfd);
         }
         else
         {
             printf("*接受处理客户端消息*\n");
-            recv_client_msg(readfds, head);/*接受处理客户端消息*/
+            recv_client_msg(readfds, head, online_head);/*接受处理客户端消息*/
         }
     }
 }
@@ -254,7 +287,12 @@ void handle_client_proc(int srvfd, Login_STNODE *head)
 int main(int argc,char *argv[])
 {
     int srvfd;
+    signal(SIGINT, signHandler);
     Login_STNODE *register_file_head;
+    success_login *online_clien_head;
+    online_clien_head = (success_login *)malloc(sizeof(success_login));
+    judge_allocate(online_clien_head);
+    online_clien_head->next = NULL;
 //    register_file_head = NULL;
     /*初始化服务端context*/
     if (server_init() < 0)
@@ -271,17 +309,25 @@ int main(int argc,char *argv[])
     register_file_head = readfiletolist_for_login("./dat/register_info.txt");
     print_personinfo(register_file_head);
     /*开始接收并处理客户端请求*/
-    handle_client_proc(srvfd, register_file_head);
+    handle_client_proc(srvfd, register_file_head, online_clien_head);
     server_uninit();
+    destroy_Login_STNODE(register_file_head);
+    destroy_success_login(online_clien_head);
     return 0;
 err:
     server_uninit();
+    destroy_Login_STNODE(register_file_head);
+    destroy_success_login(online_clien_head);
     return -1;
 }
 
-
-
-
+//忽略ctrl +c 键的处理函数
+void signHandler(int signNO)
+{
+    printf("singal:%d \n",signNO);
+    printf("安全退出服务器请输入 exit ，谢谢.\n");
+    scanf("%s", server_cmd);
+}
 
 
 

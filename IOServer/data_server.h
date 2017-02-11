@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <time.h>
 #include <fcntl.h>
-
+#include <signal.h>
 
 #define IPADDR      "127.0.0.1"
 #define PORT        8787
@@ -35,16 +35,27 @@ typedef struct server_context_st
     int maxfd;          /*句柄最大值*/
 } server_context_st;
 
-//注册或登录的客户的信息结构体
+//登录验证时的客户的信息结构体
 typedef struct reg_person_info
 {
     int reg_id;              /*注册人员的编号，是唯一的*/
     char reg_name[40];       /*注册人员的昵称*/
     char reg_pwd[40];        /*注册人员的密码*/
     char reg_time[50];       /*注册的时间*/
-    int logincounts;         /*登录次数*/
-    char lastlogintime[40];  /*上次登录的时间*/
 }reg_person_info;
+
+//登录表的结构体
+typedef struct online_person_info
+{
+    int client_sockfd;        /*登录人员的套接字描述符*/
+    int login_id;             /*登录人员的编号，是唯一的*/
+    char login_name[50];      /*登录人员的昵称*/
+    char login_pwd[50];       /*登录人员的密码*/
+    int login_status;         /*在线状态*/
+    int speak_status;         /*发言状态*/
+    int logincounts;          /*登录次数*/
+    char lastlogintime[40];   /*上次登录的时间*/
+}online_person_info;
 
 /*
 //操作信息结构体
@@ -90,12 +101,19 @@ typedef struct logmes
 }LOGMES;
 */
 
-//登录人员信息结点
+//注册表中登录人员信息结点
 typedef struct Login_STNODE
 {
     reg_person_info personinfo;
     struct Login_STNODE *next;
 }Login_STNODE;
+
+//成功登录系统的在线人员的信息结点
+typedef struct success_login
+{
+    online_person_info perinfo;
+    struct success_login *next;
+}success_login;
 
 //文件判空函数
 Status jugde_file_isEmpty(char filename[50]);
@@ -108,13 +126,44 @@ void gettime(char *systime);
 
 void write_register_table(MESSAGE message);
 
-void judge_allocate(Login_STNODE *p);
+void judge_allocate(void *p);
 
 void judge_openfile(char filename[], FILE *fp);
 
 Login_STNODE * readfiletolist_for_login(char filename[30]);
 
 void print_personinfo(Login_STNODE *head);
+
+void add_registerperson(Login_STNODE *head, reg_person_info msg);
+
+//登录成功的客户信息补全
+void client_login_success(int fd, success_login *head, online_person_info *permsg, MESSAGE msg);
+
+//在线的登录成功的客户链表
+success_login * online_client(success_login *head, online_person_info *permsg);
+
+//打印在线客户端的信息
+void print_online_client(success_login *head);
+
+//将id编号存入整形数组中
+void get_id_to_array(success_login *head,int a[]);
+
+//数组排序从小到大，冒泡排序
+void array_sort_small_to_big(int a[],int n);
+
+//获取记录的条数
+int Get_Lines(success_login *head);
+
+//遍历生成第一个不存在的最小的id编号
+int get_min_id(success_login *head);
+
+/*回收系统资源*/
+void destroy_Login_STNODE(Login_STNODE *head);
+
+/*回收系统资源*/
+void destroy_success_login(success_login *head);
+
+
 #endif // DATA_SERVER_H
 
 

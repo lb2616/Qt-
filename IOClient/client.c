@@ -62,7 +62,7 @@ void handle_connection(int sockfd)
             n = read(sockfd,&message,MAXLINE);
             if (n <= 0)
             {
-                fprintf(stderr,"client: server is closed.\n");
+                fprintf(stderr,"client: server is closed,bye,bye!!.\n");
                 close(sockfd);
                 FD_CLR(sockfd, &readfds);
                 return;

@@ -1,5 +1,4 @@
-
-#include "./client.h"
+#include "./log.h"
 
 int  MenuUI()
 {
@@ -102,7 +101,7 @@ void log_user(struct message *a)
     fflush(stdout);
     printdot();
     recv(sockfd,a,sizeof(*a),0);
-    printf("来自服务器的消息:%s\n",(*a).msg);
+    printf("123来自服务器的消息:%s\n",(*a).msg);
 }
 
  //修改密码
@@ -119,7 +118,7 @@ int login_success(struct message *a)
     time_t timep;
     pthread_t pid;
     sprintf(chat_log,"./chat/%s.txt",(*a).name);
-    if((fd=open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)
+    if((fd = open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)
     {
         printf("打开聊天记录失败!");
         exit(1);
@@ -129,13 +128,13 @@ int login_success(struct message *a)
     strcpy((*a).flag,"all");
     printf("%s您好，如需帮助请输入：help\n",locname);
     while(1)
-    {
+    {printf("libo hahah!");
         memset((*a).msg,0,strlen((*a).msg));
-        memset(str,0,strlen(str));
+        memset(str,0,strlen(str));printf(" jiejie\n");
         usleep(100000);
-
+printf("hello !\n");
         printf("TO %s:\n",(*a).flag);
-        setbuf(stdin,NULL);
+        setbuf(stdin, NULL);
         scanf("%s",str);
         if(1 == help(str))                            //提示信息
         {
@@ -179,7 +178,7 @@ int login_success(struct message *a)
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s你对 %s 说: %s\n",ctime(&timep),(*a).flag,(*a).msg);
-            printf("%s",str);
+            printf("123%s",str);
             write(fd,str,strlen(str));              //写入聊天记录文件中
         }
 

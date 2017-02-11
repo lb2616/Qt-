@@ -15,14 +15,15 @@ void handlerecvmsg(int *sockfd)
     char str[1024];
     struct message recvmsg;
     time_t timep;                              //显示当前时间
-    if((fd=open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)          //创建聊天记录文件
+    if((fd = open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)          //创建聊天记录文件
     {
         printf("打开聊天记录失败!");
         exit(1);
     }
     while(1)
-    {
+    {printf("son child thread\n");
         nread = recv(connfd,&recvmsg,sizeof(struct message),0);    //接受文件
+        printf("recvmsg.flag = %s\n", recvmsg.flag);
         if(nread == 0)
         {
             printf("与服务器的连接已断开,请检查!!!\n");
@@ -35,7 +36,7 @@ void handlerecvmsg(int *sockfd)
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s%s 对大家说: %s\n",ctime(&timep),recvmsg.name,recvmsg.msg);
-            printf("%s",str);
+            printf("now is %s!!!",str);
             write(fd,str,strlen(str));                          //聊天信息写入文件
         }
         else if (strcmp(recvmsg.flag,"personal") == 0)         //接受私信
@@ -47,11 +48,12 @@ void handlerecvmsg(int *sockfd)
             write(fd,str,strlen(str));                         //保存聊天记录
         }
         else if (strcmp(recvmsg.flag,"sermsg") == 0)          //系统提示信息
-        {
+        {printf("sermsg is server message\n");
+            /*ctime  会在字符串后面加上\n*/
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s系统信息: %s\n",ctime(&timep),recvmsg.msg);
-            printf("%s",str);
+            //printf("%s",str);
             write(fd,str,strlen(str));
             continue;
         }

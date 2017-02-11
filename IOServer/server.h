@@ -14,14 +14,15 @@ int create_server_proc(const char* ip,int port);
 int accept_client_proc(int srvfd);
 
 //向客户端发送信息
-int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head);
+int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *online_head);
 
 //接收客户端的信息
-void recv_client_msg(fd_set *readfds, Login_STNODE * head);
+void recv_client_msg(fd_set *readfds, Login_STNODE * head, success_login *online_head);
 
 //select 轮询，处理客户信息
-void handle_client_proc(int srvfd, Login_STNODE * head);
+void handle_client_proc(int srvfd, Login_STNODE * head, success_login *online_head);
 
-
+//忽略ctrl +c 键的处理函数
+void signHandler(int signNO);
 
 #endif // SERVER_H

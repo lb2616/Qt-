@@ -70,13 +70,11 @@ void read_login_table(char filename[],Login_STNODE *head)
     int flag = jugde_file_isEmpty(filename);
     while(!feof(file) && (!flag))
     {
-        fscanf(file,"%d %s %s %s %d %s\n",
+        fscanf(file,"%d %s %s %s\n",
             &people.reg_id,
             people.reg_name,
             people.reg_pwd,
-            people.reg_time,
-            &people.logincounts,
-            people.lastlogintime
+            people.reg_time
             );//从文件读入记录
         generate_node_for_login(people,head);
     }//end of while
@@ -134,18 +132,18 @@ void write_register_table(MESSAGE message)
     strcpy(user_info.reg_name, message.name);
     strcpy(user_info.reg_pwd, message.msg);
     gettime(user_info.reg_time);
-    user_info.logincounts = 0;
-    gettime(user_info.lastlogintime);
+//    user_info.logincounts = 0;
+//    gettime(user_info.lastlogintime);
     FILE *fp = NULL;
     fp = fopen("./dat/register_info.txt","ab");
     judge_openfile("./dat/register_info.txt", fp);
-    fprintf(fp,"%-10d %-17s %-17s %-30s %-17d %-17s \n",
+    fprintf(fp,"%-10d %-17s %-17s %-30s \n",
             user_info.reg_id,
             user_info.reg_name,
             user_info.reg_pwd,
-            user_info.reg_time,
-            user_info.logincounts,
-            user_info.lastlogintime
+            user_info.reg_time
+//            user_info.logincounts,
+//            user_info.lastlogintime
             );//写文件操作
     fclose(fp);
     fp = NULL;
@@ -158,7 +156,7 @@ void write_register_table(MESSAGE message)
 返回值:void 类型
 意义:判断分配空间是否成功,成功继续运行，失败退出系统
 */
-void judge_allocate(Login_STNODE *p)
+void judge_allocate(void *p)
 {
     if(NULL == p)
     {
@@ -199,8 +197,9 @@ void judge_openfile(char filename[], FILE *fp)
 Login_STNODE * readfiletolist_for_login(char filename[30])
 {
     Login_STNODE *head = (Login_STNODE *)malloc(sizeof(Login_STNODE));
+    judge_allocate(head);
     head->next = NULL;
-    read_login_table(filename,head);
+    read_login_table(filename, head);
     return head;
 }
 
@@ -209,16 +208,199 @@ void print_personinfo(Login_STNODE *head)
     Login_STNODE *p = head->next;
     while(p != NULL)
     {
-        printf("%d %s %s %s %d %s\n",
+        printf("%d %s %s %s \n",
             p->personinfo.reg_id,
             p->personinfo.reg_name,
             p->personinfo.reg_pwd,
-            p->personinfo.reg_time,
+            p->personinfo.reg_time/*,
             p->personinfo.logincounts,
-            p->personinfo.lastlogintime
+            p->personinfo.lastlogintime*/
             );//从文件读入记录
         p = p->next;
     }
+}
+
+/*
+ *每当注册成功一个用户之后，都将其加入到注册表的链表的尾部，并且写入文件中
+ */
+void add_registerperson(Login_STNODE *head, reg_person_info msg)
+{
+    Login_STNODE *p = head;
+    while (NULL != p->next)
+    {
+        p = p->next;
+    }
+    Login_STNODE *tmp = (Login_STNODE *)malloc(sizeof(Login_STNODE));
+    judge_allocate(tmp);
+    p->next = tmp ;
+    tmp->personinfo = msg;
+    tmp->next = NULL;
+}
+//登录成功的客户信息补全
+void client_login_success(int fd, success_login *head, online_person_info *permsg, MESSAGE msg)
+{
+    permsg->client_sockfd = fd; printf("fd = %d\n", fd);
+    permsg->login_id = get_min_id(head);printf("loginid = %d\n", permsg->login_id);
+    strcpy(permsg->login_name, msg.name);printf("login_name = %s\n", permsg->login_name);
+    strcpy(permsg->login_pwd, msg.msg); printf("login_pwd = %s\n", permsg->login_pwd);
+    permsg->login_status = 1;
+    permsg->speak_status = 1;
+    permsg->logincounts = 0;
+    gettime(permsg->lastlogintime);printf("lastlogintime = %s\n", permsg->lastlogintime);
+}
+
+//在线的登录成功的客户链表
+success_login * online_client(success_login *head, online_person_info *permsg)
+{
+    success_login *p = head;
+    while(NULL != p->next)
+    {
+        p = p->next;
+    }
+    success_login *tmp = (success_login *)malloc(sizeof(success_login));
+    judge_allocate(tmp);
+    p->next = tmp;
+    tmp->perinfo = *permsg;
+    tmp->next = NULL;
+}
+
+//打印在线客户端的信息
+void print_online_client(success_login *head)
+{
+    success_login *p = head->next;
+    while(NULL != p)
+    {
+        printf("%d %d %s %s %d %d %d %s \n",p->perinfo.client_sockfd, p->perinfo.login_id,
+               p->perinfo.login_name, p->perinfo.login_pwd, p->perinfo.login_status,
+               p->perinfo.speak_status, p->perinfo.logincounts, p->perinfo.lastlogintime);
+        p = p->next;
+    }
+}
+
+//将id编号存入整形数组中
+void get_id_to_array(success_login *head,int a[])
+{
+    success_login *p = head->next;
+    int i = 0;
+    while(p != NULL)
+    {
+        a[i] = p->perinfo.login_id;
+        i++;
+        p = p->next;
+    }
+}
+
+//数组排序从小到大，冒泡排序
+void array_sort_small_to_big(int a[],int n)
+{
+    int i,j,temp;
+    for(i = 0; i < n-1; i++ ) //外循环的趟数是数组个数减一
+    {
+        for(j = 0; j < n-i-1; j++)//每进行一次外循环内循环就减一
+        {
+            if(a[j] > a[j+1])//每一次外层循环内层循环都需要把相邻位置的两个数进行比较
+            {
+                temp = a[j];
+                a[j] = a[j+1];
+                a[j+1] = temp;
+            }
+        }
+    }
+}
+
+//获取记录的条数
+int Get_Lines(success_login *head)
+{
+
+    int a = 0;
+    success_login *p = head->next;
+    while(p != NULL)
+    {
+        a++;
+        p =  p->next;
+    }//printf("a = %d\n",a);
+    return a;
+}
+
+//遍历生成第一个不存在的最小的id编号
+int get_min_id(success_login *head)
+{
+    int id = 1000;
+    if(head->next == NULL)
+    {
+        return id;
+    }
+    int len = Get_Lines(head);            //获取记录条数
+    int Lenarry[len];                    //记录条数作为数组长度
+    get_id_to_array(head,Lenarry);       //将id存入数组中来
+    array_sort_small_to_big(Lenarry,len);//进行一轮冒泡排序
+    int i = 0;            //遍历生成第一个未使用的最小的id编号
+    for(i = 0; i < len ; i++)
+    {
+        if(id == Lenarry[i])
+        {
+            id ++;
+        }
+        else
+        {//printf("%d\n",id);
+            break;
+        }
+    }
+    return id;
+}
+
+/*群聊*/
+void dealwith_chat_group(int fd, success_login *head)
+{
+    MESSAGE buf;
+    memset(&buf, 0, sizeof(buf));
+    while (1)
+    {
+        int n = read(fd, &buf, sizeof(buf));
+        if (0 == n)
+        {
+        }
+    }
+    return ;
+}
+
+/*回收系统资源*/
+void destroy_Login_STNODE(Login_STNODE *head)
+{
+    if (NULL == head)
+    {
+        return;
+    }
+    Login_STNODE *p = head->next;
+    Login_STNODE *q;
+    while (NULL != p)
+    {
+        q = p->next; // 先记下p的下一个，释放当前的p，再把下一个赋值给p，循环，直到退出
+        free(p);
+        p = q;
+    }
+    free(head);
+    printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
+    head = NULL;
+}
+/*回收系统资源*/
+void destroy_success_login(success_login *head)
+{
+    if (NULL == head)
+    {
+        return;
+    }printf("1111\n");
+    success_login *p = head->next;
+    success_login *q;
+    while (NULL != p)
+    {
+        q = p->next; // 先记下p的下一个，释放当前的p，再把下一个赋值给p，循环，直到退出
+        free(p);
+        p = q;printf("222\n");
+    }
+    free(head);
+    printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
+    head = NULL;
 }
 
 

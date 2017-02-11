@@ -47,3 +47,11 @@ int input_digit(char left, char right)
     while(!(li >= left && li <= right));
     return li - '0';
 }
+
+
+
+//处理客户端发来的群聊的请求
+void deal_with_group_chat()
+{
+
+}

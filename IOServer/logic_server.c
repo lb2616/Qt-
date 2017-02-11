@@ -1,6 +1,6 @@
 #include "logic_server.h"
 //检测客户端的登录是否成功
-Status check_client_logic_request(Login_STNODE * head, MESSAGE message)
+Status check_client_login_request(Login_STNODE * head, MESSAGE message)
 {
     Login_STNODE *nhead = head;
     Login_STNODE *p = nhead->next;

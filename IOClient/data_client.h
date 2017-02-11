@@ -19,8 +19,8 @@
 #define SERV_PORT 8787
 #define LEN 500
 #define max(a,b) (a > b) ? a : b
-#define OK 1
-#define ERROR 0
+#define Is_OK 1
+#define Is_ERROR 0
 
 #define NONE "\e[0m"
 #define BLACK "\e[0;30m"
