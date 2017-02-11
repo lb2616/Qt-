@@ -15,9 +15,9 @@ HEADERS += \
     server.h \
     data_server.h \
     logic_server.h \
+    logic_server.h
 
 DISTFILES += \
-    dat/login_table.dat \
-    dat/register_info.dat \
-    dat/register_info.txt
+    dat/login_table.txt \
+    dat/register_info.txt \
 
