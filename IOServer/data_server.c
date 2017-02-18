@@ -236,6 +236,7 @@ void add_registerperson(Login_STNODE *head, reg_person_info msg)
     tmp->personinfo = msg;
     tmp->next = NULL;
 }
+
 //登录成功的客户信息补全
 void client_login_success(int fd, success_login *head, online_person_info *permsg, MESSAGE msg)
 {
@@ -349,17 +350,36 @@ int get_min_id(success_login *head)
     return id;
 }
 
-/*群聊*/
+/*服务器群发操作*/
+void group_write_message(success_login *head, MESSAGE *buf)
+{
+    success_login *p = head->next;
+    while(NULL != p)
+    {
+        if (p->perinfo.speak_status != 0 && (p->perinfo.client_sockfd > 0))
+        {
+            write(p->perinfo.client_sockfd, buf,sizeof(buf));
+        }
+        p = p->next;
+    }
+}
+
+/*处理群聊*/
 void dealwith_chat_group(int fd, success_login *head)
 {
     MESSAGE buf;
     memset(&buf, 0, sizeof(buf));
     while (1)
     {
-        int n = read(fd, &buf, sizeof(buf));
-        if (0 == n)
-        {
-        }
+//        int n = read(fd, &buf, sizeof(buf));
+//        if (0 == n)
+//        {
+//            printf("用户未发送消息!\n");
+//        }
+//        else
+//        {
+            group_write_message(head, &buf);
+//        }
     }
     return ;
 }
@@ -383,6 +403,7 @@ void destroy_Login_STNODE(Login_STNODE *head)
     printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
     head = NULL;
 }
+
 /*回收系统资源*/
 void destroy_success_login(success_login *head)
 {
@@ -402,6 +423,4 @@ void destroy_success_login(success_login *head)
     printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
     head = NULL;
 }
-
-
 

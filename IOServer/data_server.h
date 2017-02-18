@@ -157,10 +157,16 @@ int Get_Lines(success_login *head);
 //遍历生成第一个不存在的最小的id编号
 int get_min_id(success_login *head);
 
-/*回收系统资源*/
+/*服务器群发操作*/
+void group_write_message(success_login *head, MESSAGE *buf);
+
+/*处理群聊*/
+void dealwith_chat_group(int fd, success_login *head);
+
+/*回收系统资源1*/
 void destroy_Login_STNODE(Login_STNODE *head);
 
-/*回收系统资源*/
+/*回收系统资源2*/
 void destroy_success_login(success_login *head);
 
 
