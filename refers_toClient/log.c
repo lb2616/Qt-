@@ -128,11 +128,14 @@ int login_success(struct message *a)
     strcpy((*a).flag,"all");
     printf("%s您好，如需帮助请输入：help\n",locname);
     while(1)
-    {printf("libo hahah!");
+    {
+        printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
         memset((*a).msg,0,strlen((*a).msg));
-        memset(str,0,strlen(str));printf(" jiejie\n");
+        memset(str,0,strlen(str));
+        printf(" jiejie\n");    /********/
         usleep(100000);
-printf("hello !\n");
+
+        printf("%s() hello in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);   /********/
         printf("TO %s:\n",(*a).flag);
         setbuf(stdin, NULL);
         scanf("%s",str);
@@ -152,7 +155,7 @@ printf("hello !\n");
         if(strcmp((*a).flag,"view") == 0)             //请求查看在线用户
         {
             send(sockfd,a,sizeof((*a)),0);
-            strcpy((*a).flag,buf);
+            strcpy((*a).flag,buf);  printf("%s() in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);   /********/
             continue;
         }
         if(strcmp((*a).flag,"all") == 0)      //群聊
@@ -162,7 +165,7 @@ printf("hello !\n");
         }
         if (strcmp((*a).flag,"trans") == 0)
         {
-            strcpy((*a).flag,buf);
+            strcpy((*a).flag,buf); printf("%s() in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);   /********/
         }
         else if (strcmp((*a).flag,"history") == 0)  // 打开对应的用户的聊天纪录
         {
@@ -178,7 +181,7 @@ printf("hello !\n");
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s你对 %s 说: %s\n",ctime(&timep),(*a).flag,(*a).msg);
-            printf("123%s",str);
+            printf("123 %s",str);  printf("%s() in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);   /********/
             write(fd,str,strlen(str));              //写入聊天记录文件中
         }
 

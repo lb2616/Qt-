@@ -21,7 +21,8 @@ void handlerecvmsg(int *sockfd)
         exit(1);
     }
     while(1)
-    {printf("son child thread\n");
+    {
+        printf(" %s() son child thread, in lines %d \n", __PRETTY_FUNCTION__, __LINE__);/********/
         nread = recv(connfd,&recvmsg,sizeof(struct message),0);    //接受文件
         printf("recvmsg.flag = %s\n", recvmsg.flag);
         if(nread == 0)
@@ -36,7 +37,8 @@ void handlerecvmsg(int *sockfd)
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s%s 对大家说: %s\n",ctime(&timep),recvmsg.name,recvmsg.msg);
-            printf("now is %s!!!",str);
+            printf("%s",str);
+            printf(" %s() now is in lines %d!\n", __PRETTY_FUNCTION__, __LINE__); /********/
             write(fd,str,strlen(str));                          //聊天信息写入文件
         }
         else if (strcmp(recvmsg.flag,"personal") == 0)         //接受私信
@@ -44,16 +46,18 @@ void handlerecvmsg(int *sockfd)
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s%s 对你说: %s\n",ctime(&timep),recvmsg.name,recvmsg.msg);
-            printf("%s",str);
+            printf("%s() %s in lines %d!!!", __PRETTY_FUNCTION__ , str, __LINE__);
             write(fd,str,strlen(str));                         //保存聊天记录
         }
         else if (strcmp(recvmsg.flag,"sermsg") == 0)          //系统提示信息
-        {printf("sermsg is server message\n");
+        {
+            printf("sermsg is server message\n");/********/
             /*ctime  会在字符串后面加上\n*/
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s系统信息: %s\n",ctime(&timep),recvmsg.msg);
-            //printf("%s",str);
+            printf("%s ",str);
+            printf("%s() in lines %d \n", __PRETTY_FUNCTION__ , __LINE__);
             write(fd,str,strlen(str));
             continue;
         }
@@ -62,7 +66,7 @@ void handlerecvmsg(int *sockfd)
             time (&timep);
             memset(str,0,strlen(str));
             sprintf(str,"%s在线用户:\n%s\n",ctime(&timep),recvmsg.msg);
-            printf("%s",str);
+            printf("%s() %s in lines %d\n", __PRETTY_FUNCTION__ ,str,  __LINE__);
             continue;
         }
     }
