@@ -16,7 +16,7 @@ int ui_private_chat(int sockfd);
 int ui_group_chat(int sockfd);
 
 //6.聊天主界面
-int ui_mainchat(int sockfd);
+int ui_mainchat(int sockfd, MESSAGE *message);
 
 //7.主功能界面
 int ui_main(int sockfd);

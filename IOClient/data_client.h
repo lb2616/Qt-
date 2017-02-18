@@ -47,7 +47,7 @@
 #define HIDE "\e[8m"
 #define CLEAR "\e[2J"
 #define CLRLINE "\r\e[K" //or "\e[1K\r"
-
+char locname[20];               //本客户端用户名
 
 typedef int Status;
 //注册客户的信息结构体
@@ -91,6 +91,11 @@ void dynamic_print();
 
 //处理键盘输入字符的函数，返回值为int型的
 int input_digit(char left, char right);
+
+//处理客户端发来的群聊的请求
+void deal_with_group_chat();
+
+void cutStr(char str[],char left[], int n, char right[],int max, char c);
 
 #endif // DATA_CLIENT_H_INCLUDED
 

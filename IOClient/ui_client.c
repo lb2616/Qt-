@@ -103,48 +103,42 @@ int ui_group_chat(int sockfd)
     memset(&Client, 0, sizeof(Client));
     while(1)
     {
-
+        printf("all:\n");
+        scanf("%s",Client.msg);
         write(sockfd, &Client, sizeof(Client));
     }
     return 1;
 }
 
 //6.聊天主界面
-int ui_mainchat(int sockfd)
+int ui_mainchat(int sockfd, MESSAGE *message)
 {
-    int iChoice;
-    printf("===============聊天选项==============\n");
-    printf("\t1.私聊\n");
-    printf("\t2.群聊\n");
-    printf("\t3.查看聊天记录\n");
-    printf("\t4.查看在线人数\n");
-    printf("\t5.文件传输下载\n");
-    printf("\t0.返回\n");
-    printf("=====================================\n");
-    printf("\t请选择:");
-    iChoice = input_digit('0', '5');
-    switch(iChoice)
+    char str[MAXLINE];
+    char buf[MAXLINE];
+    setbuf(stdin,NULL);
+    strcpy(message->flag,"群聊");
+    printf("%s您好，如需帮助请输入：help\n",locname);
+    while (1)
     {
-        case 1:
-            ui_private_chat(sockfd);
-            break;
-        case 2:
-            ui_group_chat(sockfd);
-            break;
-        case 3:
-        //    Record(sockfd);
-            break;
-        case 4:
-        //    Record(sockfd);
-            break;
-        case 5:
-        //    Record(sockfd);
-            break;
-        case 0:
-            ui_main(sockfd);
-            break;
+        printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
+        printf("%s:\n", message->flag);
+        setbuf(stdin, NULL);
+        scanf("%s",str);
+        if (1 == help(str))
+        {
+            continue;
+        }
+        strcpy(message->name, locname);
+        strcpy(buf,message->flag);
+        cutStr(str, message->flag, sizeof(str), message->msg, sizeof(str), '#'); //调用字符切割函数
+        if(strcmp(message->flag ,"群聊") == 0)      //群聊
+        {
+            send(sockfd, &message, sizeof(message->msg), 0);printf("%s write message to server in lines %d\n", __PRETTY_FUNCTION__, __LINE__);
+            continue;
+        }
+
     }
-    return 1;
+
 }
 
 //7.主功能界面
@@ -163,3 +157,21 @@ int Exit(int sockfd)
     exit(0);
 }
 
+//功能帮助界面
+int help(char str[])
+{
+    if(strcmp(str, "help") == 0)
+    {
+        printf("%s 用户，您好：\n",locname);
+        printf("all#hello!-------------对所有人说hello!\n");
+        printf("用户名#要说的话!---------跟该用户私聊!\n");
+        printf("view#------------------查看在线用户\n");
+        printf("history#---------------查看聊天记录\n");
+        printf("exit#------------------退出\n");
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
