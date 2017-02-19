@@ -129,11 +129,14 @@ int ui_mainchat(int sockfd, MESSAGE *message)
             continue;
         }
         strcpy(message->name, locname);
-        strcpy(buf,message->flag);
+        strcpy(buf, message->flag);
+        printf("%s(),buf = %s in lines %d!\n", __PRETTY_FUNCTION__, buf, __LINE__);  /********/
         cutStr(str, message->flag, sizeof(str), message->msg, sizeof(str), '#'); //调用字符切割函数
         if(strcmp(message->flag ,"群聊") == 0)      //群聊
         {
-            send(sockfd, &message, sizeof(message->msg), 0);printf("%s write message to server in lines %d\n", __PRETTY_FUNCTION__, __LINE__);
+            //send(sockfd, message, sizeof(*message), 0);
+            write(sockfd, message, sizeof(*message));        //向服务器发送信息
+            printf("%s write message to server in lines %d\n", __PRETTY_FUNCTION__, __LINE__);
             continue;
         }
 

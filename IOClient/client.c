@@ -11,7 +11,7 @@ void handle_recv_msg(int sockfd, MESSAGE buf)
     else if (0 == strcmp(buf.flag, "登录成功"))
     {
         printf("in login cases client recv msg is:%s\n", buf.flag);
-        printf("name = %s", buf.name);
+        printf(" %s(), name = %s\n ", __PRETTY_FUNCTION__, buf.name);
         strcpy(locname, buf.name);
         ui_mainchat(sockfd, &buf);
     }
