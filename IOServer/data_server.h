@@ -161,7 +161,7 @@ int get_min_id(success_login *head);
 void group_write_message(success_login *head, MESSAGE *buf);
 
 /*处理群聊*/
-void dealwith_chat_group(int fd, success_login *head);
+void dealwith_chat_group(int fd, success_login *head, MESSAGE *buf);
 
 /*回收系统资源1*/
 void destroy_Login_STNODE(Login_STNODE *head);

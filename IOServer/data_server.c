@@ -354,23 +354,25 @@ int get_min_id(success_login *head)
 void group_write_message(success_login *head, MESSAGE *buf)
 {
     success_login *p = head->next;
+    printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
     while(NULL != p)
-    {
+    {printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
         if (p->perinfo.speak_status != 0 && (p->perinfo.client_sockfd > 0))
         {
             write(p->perinfo.client_sockfd, buf,sizeof(buf));
+            printf("%s() write to name = %s\n ", __PRETTY_FUNCTION__, p->perinfo.login_name);
         }
         p = p->next;
     }
 }
 
 /*处理群聊*/
-void dealwith_chat_group(int fd, success_login *head)
+void dealwith_chat_group(int fd, success_login *head, MESSAGE *buf)
 {
-    MESSAGE buf;
-    memset(&buf, 0, sizeof(buf));
-    while (1)
-    {
+//    MESSAGE buf;
+//    memset(&buf, 0, sizeof(buf));
+//    while (1)
+//    {
 //        int n = read(fd, &buf, sizeof(buf));
 //        if (0 == n)
 //        {
@@ -378,9 +380,10 @@ void dealwith_chat_group(int fd, success_login *head)
 //        }
 //        else
 //        {
-            group_write_message(head, &buf);
+//            group_write_message(head, &buf);
 //        }
-    }
+//    }
+    group_write_message(head, buf);
     return ;
 }
 

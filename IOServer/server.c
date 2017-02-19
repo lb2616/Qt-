@@ -133,6 +133,8 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
 {
     online_person_info message;
     memset(&message, 0, sizeof(message));
+    printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
+    printf("%s() buf.flag = %s in lines %d \n", __PRETTY_FUNCTION__, buf.flag, __LINE__);
     if (0 == strcmp(buf.flag, "注册"))
     {
 
@@ -173,9 +175,10 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
     }
     else if (0 == strcmp(buf.flag, "群聊"))
     {
-        printf("start %s", buf.flag);
-        dealwith_chat_group(fd, online_head);
+        printf("start %s\n", buf.flag);
+        dealwith_chat_group(fd, online_head, &buf);
     }
+    printf("beyond all cases\n");
     return 0;
 }
 
