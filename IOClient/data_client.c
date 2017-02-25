@@ -102,3 +102,104 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
         right[max] = '\0';
     }
 }
+
+/*
+功能:获取当前系统时间
+传入参数:char 类型
+返回值:void 类型
+意义:获取当前系统时间  需要包含头文件#include <time.h>
+*/
+void gettime(char *systime)
+{
+    char year[20],mon[10],day[10],hour[10],min[10],sec[10];
+    time_t rawtime;
+    struct tm *tm;
+    time ( &rawtime );
+    tm = localtime ( &rawtime );
+    sprintf(year,"%d",tm->tm_year+1900);
+    if( tm->tm_mon + 1 < 10)
+        sprintf(mon,"0%d", tm->tm_mon + 1);
+    else
+        sprintf(mon,"%d", tm->tm_mon + 1);
+    if( tm->tm_mday  < 10)
+        sprintf(day,"0%d", tm->tm_mday);
+    else
+        sprintf(day,"%d", tm->tm_mday);
+    if( tm->tm_hour < 10)
+        sprintf(hour,"0%d", tm->tm_hour);
+    else
+        sprintf(hour,"%d", tm->tm_hour);
+    if( tm->tm_min < 10)
+        sprintf(min,"0%d", tm->tm_min);
+    else
+        sprintf(min,"%d", tm->tm_min);
+    if( tm->tm_sec < 10)
+        sprintf(sec,"0%d", tm->tm_sec);
+    else
+        sprintf(sec,"%d", tm->tm_sec);
+    sprintf(systime,"%s-%s-%s-%s:%s:%s", year, mon, day, hour, min, sec);//printf("systime = %s\n",systime);
+}
+
+/*登录成功之后处理接收的服务器信息*/
+void handle_servermsg_afterlogin_success(int *sockfd)
+{
+    int connfd = *sockfd;
+    int nread;
+    int fd;
+    char buf[1024];
+    char str[1024];
+    char systime[50];
+    MESSAGE recvmessage;
+    gettime(systime);  //显示当前时间
+    if((fd = open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)          //创建聊天记录文件
+    {
+        printf("打开聊天记录失败!");
+        exit(1);
+    }
+    while(1)
+    {
+        printf(" %s() son child thread, in lines %d \n", __PRETTY_FUNCTION__, __LINE__);/********/
+        nread = recv(connfd, &recvmessage, sizeof(MESSAGE), 0);    //接受文件
+        printf("recvmessage.flag = %s\n", recvmessage.flag);
+        if(nread == 0)
+        {
+            printf("与服务器的连接已断开,请检查!!!\n");
+            close(fd);
+            close(connfd);
+            exit(0);
+        }
+        else if (strcmp(recvmessage.flag, "all") == 0)             //接受群发信息
+        {
+            memset(str, 0, strlen(str));
+            sprintf(str, "%s %s 对大家说: %s\n", systime, recvmessage.name, recvmessage.msg);
+            printf("%s", str);
+            printf(" %s() now is in lines %d!\n", __PRETTY_FUNCTION__, __LINE__); /********/
+            write(fd, str, strlen(str));                          //聊天信息写入文件
+        }
+        else if (strcmp(recvmessage.flag, "personal") == 0)         //接受私信
+        {
+            memset(str, 0, strlen(str));
+            sprintf(str, "%s %s 对你说: %s\n", systime, recvmessage.name, recvmessage.msg);
+            printf("%s() %s in lines %d!!!", __PRETTY_FUNCTION__ , str, __LINE__);
+            write(fd, str, strlen(str));                         //保存聊天记录
+        }
+        else if (strcmp(recvmessage.flag, "sermsg") == 0)          //系统提示信息
+        {
+            printf("sermsg is server message\n");/********/
+            memset(str, 0, strlen(str));
+            sprintf(str, "%s系统信息: %s\n", systime, recvmessage.msg);
+            printf("%s ", str);
+            printf("%s() in lines %d \n", __PRETTY_FUNCTION__ , __LINE__);
+            write(fd, str, strlen(str));
+            continue;
+        }
+        else if (strcmp(recvmessage.flag, "view") == 0)       //收到查看在线用户标志
+        {
+            memset(str, 0, strlen(str));
+            sprintf(str,"%s在线用户:\n%s\n", systime, recvmessage.msg);
+            printf("%s() %s in lines %d\n", __PRETTY_FUNCTION__ , str,  __LINE__);
+            continue;
+        }
+    }
+}
+

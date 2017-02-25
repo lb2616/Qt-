@@ -116,13 +116,16 @@ int ui_mainchat(int sockfd, MESSAGE *message)
     char str[MAXLINE];
     char buf[MAXLINE];
     setbuf(stdin,NULL);
+    pthread_t pid;
     strcpy(message->flag,"群聊");
     printf("%s您好，如需帮助请输入：help\n",locname);
+    pthread_create(&pid, NULL, (void*)handle_servermsg_afterlogin_success, (void *)&sockfd);   //创建接受消息线程
     while (1)
     {
         printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
         printf("%s:\n", message->flag);
         setbuf(stdin, NULL);
+        usleep(100000);
         scanf("%s",str);
         if (1 == help(str))
         {

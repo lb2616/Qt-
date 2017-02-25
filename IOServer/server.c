@@ -176,6 +176,7 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
     else if (0 == strcmp(buf.flag, "群聊"))
     {
         printf("start %s\n", buf.flag);
+        printf("接受到来自 %s 的 %s\n", buf.name, buf.msg);
         dealwith_chat_group(fd, online_head, &buf);
     }
     printf("beyond all cases\n");

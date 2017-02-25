@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     int clientfd[64] = {0};
     int i = 0;
 
-  //  strcpy(clientNode.name,"*****");
+    //  strcpy(clientNode.name,"*****");
     clientNode.speak=1;
     fd=open("chat.txt",O_RDWR|O_CREAT|O_APPEND,0777);
     if(fd<0)
@@ -140,8 +140,8 @@ int main(int argc, char **argv)
                         continue;
                     }
 
+                }
             }
-        }
         }
     }
     close(listenfd);

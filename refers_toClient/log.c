@@ -133,7 +133,7 @@ int login_success(struct message *a)
         memset((*a).msg,0,strlen((*a).msg));
         memset(str,0,strlen(str));
         printf(" jiejie\n");    /********/
-        usleep(100000);
+        //usleep(100000);
 
         printf("%s() hello in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);   /********/
         printf("TO %s:\n",(*a).flag);

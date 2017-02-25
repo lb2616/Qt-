@@ -13,6 +13,9 @@
 #include <errno.h>
 #include <curses.h>
 #include <menu.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #define MAXLINE 1024
 #define IPADDRESS "127.0.0.1"
@@ -48,7 +51,7 @@
 #define CLEAR "\e[2J"
 #define CLRLINE "\r\e[K" //or "\e[1K\r"
 char locname[20];               //本客户端用户名
-
+char chat_log[100];             //创建登录成功的用户的聊天记录的新文件
 typedef int Status;
 //注册客户的信息结构体
 typedef struct reg_person_info
@@ -96,6 +99,11 @@ int input_digit(char left, char right);
 void deal_with_group_chat();
 
 void cutStr(char str[],char left[], int n, char right[],int max, char c);
+
+void gettime(char *systime);
+
+/*登录成功之后处理接收的服务器信息*/
+void handle_servermsg_afterlogin_success(int *sockfd);
 
 #endif // DATA_CLIENT_H_INCLUDED
 
