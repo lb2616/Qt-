@@ -117,8 +117,9 @@ int ui_mainchat(int sockfd, MESSAGE *message)
     char buf[MAXLINE];
     setbuf(stdin,NULL);
     pthread_t pid;
-    strcpy(message->flag,"群聊");
+    strcpy(message->flag, "群聊");
     printf("%s您好，如需帮助请输入：help\n",locname);
+    strcpy(chat_log, locname);
     pthread_create(&pid, NULL, (void*)handle_servermsg_afterlogin_success, (void *)&sockfd);   //创建接受消息线程
     while (1)
     {

@@ -150,7 +150,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
     char str[1024];
     char systime[50];
     MESSAGE recvmessage;
-    gettime(systime);  //显示当前时间
+//    gettime(systime);  //显示当前时间
     if((fd = open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)          //创建聊天记录文件
     {
         printf("打开聊天记录失败!");
@@ -159,7 +159,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
     while(1)
     {
         printf(" %s() son child thread, in lines %d \n", __PRETTY_FUNCTION__, __LINE__);/********/
-        nread = recv(connfd, &recvmessage, sizeof(MESSAGE), 0);    //接受文件
+        nread = read(connfd, &recvmessage, sizeof(MESSAGE));    //接受文件
         printf("recvmessage.flag = %s\n", recvmessage.flag);
         if(nread == 0)
         {
@@ -168,8 +168,9 @@ void handle_servermsg_afterlogin_success(int *sockfd)
             close(connfd);
             exit(0);
         }
-        else if (strcmp(recvmessage.flag, "all") == 0)             //接受群发信息
+        else if (strcmp(recvmessage.flag, "群聊") == 0)             //接受群发信息
         {
+            gettime(systime);
             memset(str, 0, strlen(str));
             sprintf(str, "%s %s 对大家说: %s\n", systime, recvmessage.name, recvmessage.msg);
             printf("%s", str);
@@ -178,6 +179,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
         }
         else if (strcmp(recvmessage.flag, "personal") == 0)         //接受私信
         {
+            gettime(systime);
             memset(str, 0, strlen(str));
             sprintf(str, "%s %s 对你说: %s\n", systime, recvmessage.name, recvmessage.msg);
             printf("%s() %s in lines %d!!!", __PRETTY_FUNCTION__ , str, __LINE__);
@@ -185,6 +187,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
         }
         else if (strcmp(recvmessage.flag, "sermsg") == 0)          //系统提示信息
         {
+            gettime(systime);
             printf("sermsg is server message\n");/********/
             memset(str, 0, strlen(str));
             sprintf(str, "%s系统信息: %s\n", systime, recvmessage.msg);
@@ -195,6 +198,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
         }
         else if (strcmp(recvmessage.flag, "view") == 0)       //收到查看在线用户标志
         {
+            gettime(systime);
             memset(str, 0, strlen(str));
             sprintf(str,"%s在线用户:\n%s\n", systime, recvmessage.msg);
             printf("%s() %s in lines %d\n", __PRETTY_FUNCTION__ , str,  __LINE__);

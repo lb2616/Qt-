@@ -356,10 +356,11 @@ void group_write_message(success_login *head, MESSAGE *buf)
     success_login *p = head->next;
     printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
     while(NULL != p)
-    {printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
+    {
+        printf("%s(), in lines %d!\n", __PRETTY_FUNCTION__, __LINE__);  /********/
         if (p->perinfo.speak_status != 0 && (p->perinfo.client_sockfd > 0))
         {
-            write(p->perinfo.client_sockfd, buf,sizeof(buf));
+            write(p->perinfo.client_sockfd, buf, sizeof(*buf));
             printf("%s() write to name = %s\n ", __PRETTY_FUNCTION__, p->perinfo.login_name);
         }
         p = p->next;
