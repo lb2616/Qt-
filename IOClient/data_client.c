@@ -86,7 +86,7 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
     }
 
     left[i] = '\0';
-
+printf("left = %s\n", left);
     for(j = i+1 ; j < max; j++)
     {
         if(str[j] == '\0')
@@ -101,6 +101,7 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
     {
         right[max] = '\0';
     }
+    printf("right = %s\n", right);
 }
 
 /*
@@ -146,12 +147,12 @@ void handle_servermsg_afterlogin_success(int *sockfd)
     int connfd = *sockfd;
     int nread;
     int fd;
-    char buf[1024];
+//    char buf[1024];
     char str[1024];
     char systime[50];
     MESSAGE recvmessage;
-//    gettime(systime);  //显示当前时间
-    if((fd = open(chat_log,O_RDWR|O_CREAT|O_APPEND,0777)) < 0)          //创建聊天记录文件
+    printf("chat_log = %s\n", chat_log);
+    if((fd = open(chat_log, O_RDWR|O_CREAT|O_APPEND, 0777)) < 0)          //创建聊天记录文件
     {
         printf("打开聊天记录失败!");
         exit(1);
@@ -168,7 +169,7 @@ void handle_servermsg_afterlogin_success(int *sockfd)
             close(connfd);
             exit(0);
         }
-        else if (strcmp(recvmessage.flag, "群聊") == 0)             //接受群发信息
+        else if (strcmp(recvmessage.flag, GROUP_CHAT) == 0)             //接受群发信息
         {
             gettime(systime);
             memset(str, 0, strlen(str));

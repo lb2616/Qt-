@@ -117,9 +117,8 @@ int ui_mainchat(int sockfd, MESSAGE *message)
     char buf[MAXLINE];
     setbuf(stdin,NULL);
     pthread_t pid;
-    strcpy(message->flag, "群聊");
+    strcpy(message->flag, GROUP_CHAT);
     printf("%s您好，如需帮助请输入：help\n",locname);
-    strcpy(chat_log, locname);
     pthread_create(&pid, NULL, (void*)handle_servermsg_afterlogin_success, (void *)&sockfd);   //创建接受消息线程
     while (1)
     {
@@ -136,16 +135,14 @@ int ui_mainchat(int sockfd, MESSAGE *message)
         strcpy(buf, message->flag);
         printf("%s(),buf = %s in lines %d!\n", __PRETTY_FUNCTION__, buf, __LINE__);  /********/
         cutStr(str, message->flag, sizeof(str), message->msg, sizeof(str), '#'); //调用字符切割函数
-        if(strcmp(message->flag ,"群聊") == 0)      //群聊
+        if(strcmp(message->flag, GROUP_CHAT) == 0)      //群聊
         {
             //send(sockfd, message, sizeof(*message), 0);
             write(sockfd, message, sizeof(*message));        //向服务器发送信息
             printf("%s write message to server in lines %d\n", __PRETTY_FUNCTION__, __LINE__);
             continue;
         }
-
     }
-
 }
 
 //7.主功能界面

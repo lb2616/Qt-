@@ -13,6 +13,7 @@ void handle_recv_msg(int sockfd, MESSAGE buf)
         printf("in login cases client recv msg is:%s\n", buf.flag);
         printf(" %s(), name = %s\n ", __PRETTY_FUNCTION__, buf.name);
         strcpy(locname, buf.name);
+        sprintf(chat_log,"./chat_records/%s.txt",buf.name);
         ui_mainchat(sockfd, &buf);
     }
     else if (0 == strcmp(buf.flag, "登录失败"))

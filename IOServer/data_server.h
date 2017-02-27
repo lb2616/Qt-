@@ -26,6 +26,21 @@
 #define ISTRUE 1
 #define ERROR 0
 #define OK 1
+
+#define SERVER_MSG        "server_msg"         //服务器的消息
+#define REGISTER          "register"           //注册
+#define REGISTER_SUCCESS  "register_success"   //注册成功
+#define REGISTER_FAILURE  "register_failure"   //注册失败
+#define LOGIN_SUCCESS     "logic_success"      //登录成功
+#define LOGIN_FAILURE     "logic_failure"      //登录失败
+#define GROUP_CHAT        "group_chat"         //群聊
+#define PERSONAL_CHAT     "personal_chat"      //私聊
+#define VIEW_ONLINE       "view_online"        //查看在线人员
+#define FILE_TRANS        "file_trans"         //文件传输
+#define CHANGE_PWD        "change_pwd"         //修改密码
+#define EXIT_CHATROOM     "exit_chatroom"      //离开聊天室
+
+
 typedef int Status;
 typedef struct server_context_st
 {
@@ -168,6 +183,9 @@ void destroy_Login_STNODE(Login_STNODE *head);
 
 /*回收系统资源2*/
 void destroy_success_login(success_login *head);
+
+/*用户退出聊天室时，将此用户从服务器的链表中删除*/
+void user_exit_chatroom(int fd, success_login *head);
 
 
 #endif // DATA_SERVER_H

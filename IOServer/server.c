@@ -173,7 +173,7 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
             write(fd, &buf,sizeof(buf));
         }
     }
-    else if (0 == strcmp(buf.flag, "群聊"))
+    else if (0 == strcmp(buf.flag, GROUP_CHAT))
     {
         printf("start %s\n", buf.flag);
         printf("接受到来自 %s 的 %s\n", buf.name, buf.msg);
@@ -208,6 +208,8 @@ void recv_client_msg(fd_set *readfds,Login_STNODE * head, success_login *online_
             {
                 /* n == 0表示读取完成，客户都关闭套接字*/
                 FD_CLR(clifd, &s_srv_ctx->allfds); // 将clifd位设置为0
+                printf("will close the clifd\n");
+                user_exit_chatroom(clifd, online_head);
                 close(clifd);                      // 关闭描述符
                 s_srv_ctx->clifds[i] = -1;         // 将描述符设置为-1
                 continue;
@@ -225,7 +227,6 @@ void handle_client_proc(int srvfd, Login_STNODE *head, success_login *online_hea
     fd_set *readfds = &s_srv_ctx->allfds;
 //    struct timeval tv;
     int i = 0;
-printf("libo\n");
     while (1) {
         /*每次调用select前都要重新设置文件描述符和时间，因为事件发生后，文件描述符和时间都被内核修改啦*/
         FD_ZERO(readfds);

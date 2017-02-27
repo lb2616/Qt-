@@ -50,6 +50,33 @@
 #define HIDE "\e[8m"
 #define CLEAR "\e[2J"
 #define CLRLINE "\r\e[K" //or "\e[1K\r"
+
+#define SERVER_MSG        "server_msg"         //服务器的消息
+#define REGISTER          "register"           //注册
+#define REGISTER_SUCCESS  "register_success"   //注册成功
+#define REGISTER_FAILURE  "register_failure"   //注册失败
+#define LOGIN_SUCCESS     "logic_success"      //登录成功
+#define LOGIN_FAILURE     "logic_failure"      //登录失败
+#define GROUP_CHAT        "group_chat"         //群聊
+#define PERSONAL_CHAT     "personal_chat"      //私聊
+#define VIEW_ONLINE       "view_online"        //查看在线人员
+#define FILE_TRANS        "file_trans"         //文件传输
+#define CHANGE_PWD        "change_pwd"         //修改密码
+#define EXIT_CHATROOM     "exit_chatroom"      //离开聊天室
+
+/*
+enum INFO_TYPES
+{
+    server_msg = 0,
+    group_chat,
+    personal_chat,
+    view_online,
+    file_trans,
+    change_pwd,
+    exit
+};
+*/
+
 char locname[20];               //本客户端用户名
 char chat_log[100];             //创建登录成功的用户的聊天记录的新文件
 typedef int Status;

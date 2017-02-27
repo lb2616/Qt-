@@ -388,7 +388,7 @@ void dealwith_chat_group(int fd, success_login *head, MESSAGE *buf)
     return ;
 }
 
-/*回收系统资源*/
+/*回收注册人员链表的系统资源*/
 void destroy_Login_STNODE(Login_STNODE *head)
 {
     if (NULL == head)
@@ -408,7 +408,7 @@ void destroy_Login_STNODE(Login_STNODE *head)
     head = NULL;
 }
 
-/*回收系统资源*/
+/*回收回收在线人员链表的系统资源*/
 void destroy_success_login(success_login *head)
 {
     if (NULL == head)
@@ -427,4 +427,34 @@ void destroy_success_login(success_login *head)
     printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
     head = NULL;
 }
+
+/*用户退出聊天室时，将此用户从服务器的链表中删除*/
+void user_exit_chatroom(int fd, success_login *head)
+{
+    success_login *cur_node = head->next;
+    success_login *pre_node = head;
+    while (NULL != cur_node)
+    {
+        if (fd == cur_node->perinfo.client_sockfd)
+        {
+            pre_node->next = cur_node->next;
+            printf("remove fd = %d, name = %s from linklist and server\n", fd, cur_node->perinfo.login_name);
+            free(cur_node);
+            cur_node = NULL;
+            return;
+        }
+        pre_node = cur_node;
+        cur_node = cur_node->next;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
