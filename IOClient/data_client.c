@@ -87,6 +87,7 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
 
     left[i] = '\0';
 printf("left = %s\n", left);
+printf("i = %d n = %d\n",i ,n);
     for(j = i+1 ; j < max; j++)
     {
         if(str[j] == '\0')

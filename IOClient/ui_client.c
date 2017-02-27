@@ -134,7 +134,9 @@ int ui_mainchat(int sockfd, MESSAGE *message)
         strcpy(message->name, locname);
         strcpy(buf, message->flag);
         printf("%s(),buf = %s in lines %d!\n", __PRETTY_FUNCTION__, buf, __LINE__);  /********/
-        cutStr(str, message->flag, sizeof(str), message->msg, sizeof(str), '#'); //调用字符切割函数
+        cutStr(str, message->flag, strlen(str), message->msg, strlen(str), '#'); //调用字符切割函数
+//        cutStr(str, message->flag, sizeof(str), message->msg, sizeof(str), '#'); //调用字符切割函数
+        // 注意strlen和sizeof的区别，不能混用会出错
         if(strcmp(message->flag, GROUP_CHAT) == 0)      //群聊
         {
             //send(sockfd, message, sizeof(*message), 0);
