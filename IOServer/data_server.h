@@ -133,9 +133,9 @@ typedef struct success_login
 //文件判空函数
 Status jugde_file_isEmpty(char filename[50]);
 
-void generate_node_for_login(reg_person_info people,Login_STNODE *head);
+void generate_node_for_login(reg_person_info people, Login_STNODE *head);
 
-void  read_login_table(char filename[],Login_STNODE *head);
+void  read_login_table(char filename[], Login_STNODE *head);
 
 void gettime(char *systime);
 
@@ -161,10 +161,10 @@ success_login * online_client(success_login *head, online_person_info *permsg);
 void print_online_client(success_login *head);
 
 //将id编号存入整形数组中
-void get_id_to_array(success_login *head,int a[]);
+void get_id_to_array(success_login *head, int a[]);
 
 //数组排序从小到大，冒泡排序
-void array_sort_small_to_big(int a[],int n);
+void array_sort_small_to_big(int a[], int n);
 
 //获取记录的条数
 int Get_Lines(success_login *head);

@@ -55,7 +55,7 @@ int ui_login(int sockfd)
 //    pnum0=Client.pnum;                            //用全局变量保存登录者的帐号
     strcpy(Client.flag,"登录");
     printf("正在连接服务器，请稍等.\n");
-    write(sockfd,&Client,sizeof(Client));        //向服务器发送信息，请求登录
+    write(sockfd, &Client, sizeof(Client));        //向服务器发送信息，请求登录
     return 1;
 }
 
@@ -72,7 +72,7 @@ int ui_register_login(int sockfd)
         printf("\t0.退出                \n");
         printf("-------------------------------\n");
         printf("请选择:");
-        scanf(" %d",&iChoice);//getchar();
+        scanf(" %d", &iChoice);//getchar();
         setbuf(stdin,NULL);
     }while((iChoice != 1) && (iChoice != 2) && (iChoice != 0));
     switch(iChoice)
@@ -158,7 +158,7 @@ int Exit(int sockfd)
     MESSAGE Client;
     strcpy(Client.flag,"退出");
 //	Client.pnum = pnum0;
-    write(sockfd,&Client,sizeof(Client));
+    write(sockfd, &Client, sizeof(Client));
     close(sockfd);
     exit(0);
 }
@@ -179,5 +179,41 @@ int help(char str[])
     else
     {
         return 0;
+    }
+}
+
+/*登录时有3次机会，如果登录错误大于等于3次时，直接退出客户端*/
+void cirlce_login_failed(int sockfd, int *n, MESSAGE message)
+{
+    char buf[50];
+    //memset(&buf, 0, sizeof(buf));
+    while(*n)
+    {
+        printf("你还有 %d次机会!\n", *n);
+        ui_login(sockfd);
+        printf("socfd = %d\n", sockfd);
+       // printf("正在连接服务器，请稍等");
+       // dynamic_print();
+        int t = read(sockfd, buf, sizeof(buf));printf("t = %d\n",t );
+        printf("buf.flag = %s\n", buf);
+//        printf("buf.name = %s\n", buf.name);
+//        printf("buf.msg = %s\n", buf.msg);
+        if (0 == strcmp(buf, "登录成功"))
+        {
+            printf(" %s(), name = %s\n ", __PRETTY_FUNCTION__, message.name);
+            strcpy(locname, message.name);
+            sprintf(chat_log, "./chat_records/%s.txt", message.name);
+            ui_mainchat(sockfd, &message);
+        }
+        else
+        {
+            (*n)--;
+        }
+    }
+    if (0 == (*n))
+    {
+        printf("输入出错超过3次，退出系统!\n");
+        close(sockfd);
+        exit(0);
     }
 }

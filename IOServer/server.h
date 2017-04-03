@@ -8,7 +8,7 @@ void server_uninit();
 int server_init();
 
 //服务器端，调用socket生成套接字描述符,bind,listen，返回监听套接字
-int create_server_proc(const char* ip,int port);
+int create_server_proc(const char* ip, int port);
 
 //处理是否接受客户端的请求
 int accept_client_proc(int srvfd);

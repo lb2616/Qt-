@@ -44,7 +44,7 @@ int create_server_proc(const char* ip,int port)
 {
     int  fd;
     struct sockaddr_in servaddr;
-    fd = socket(AF_INET, SOCK_STREAM,0);  //调用socket生成套接字描述符
+    fd = socket(AF_INET, SOCK_STREAM, 0);  //调用socket生成套接字描述符
 //    int flags = fcntl(fd, F_GETFL, 0);
 //    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     if (-1 == fd)
@@ -62,7 +62,7 @@ int create_server_proc(const char* ip,int port)
 
     bzero(&servaddr,sizeof(servaddr));       /*将目标中指定数目的字节置为0。经常用此函数对套接字地址结构进行初始化*/
     servaddr.sin_family = AF_INET;           /*设置IPV4协议族*/
-    inet_pton(AF_INET,ip,&servaddr.sin_addr);/*将ip的字符串形式的IP地址转换成网络字节序的二进制IP地址*/
+    inet_pton(AF_INET, ip, &servaddr.sin_addr);/*将ip的字符串形式的IP地址转换成网络字节序的二进制IP地址*/
     servaddr.sin_port = htons(port);
 
     if (-1 == bind(fd, (struct sockaddr*)&servaddr, sizeof(servaddr)))
@@ -89,7 +89,7 @@ int accept_client_proc(int srvfd)
     printf("accpet clint proc is called.\n");
 
 ACCEPT:
-    clifd = accept(srvfd,(struct sockaddr*)&cliaddr,&cliaddrlen);
+    clifd = accept(srvfd, (struct sockaddr*)&cliaddr, &cliaddrlen);
 
     if (-1 == clifd)
     {
@@ -104,7 +104,7 @@ ACCEPT:
         }
     }
     fprintf(stdout, "accept a new client: %s:%d\n",
-            inet_ntoa(cliaddr.sin_addr),cliaddr.sin_port);
+            inet_ntoa(cliaddr.sin_addr), cliaddr.sin_port);
 
     //将新的连接描述符添加到数组中
     int i = 0;
@@ -140,7 +140,7 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
 
         printf("recv buf flag is :%s\n", buf.flag);
         strcpy(buf.flag, "注册成功");
-        write(fd, &buf,sizeof(buf));
+        write(fd, &buf, sizeof(buf));
         printf(" :%s\n", buf.name);
         printf(" :%s\n", buf.msg);
         printf("writefile start\n");
@@ -163,6 +163,7 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
         {
             strcpy(buf.flag, "登录成功");
             write(fd, &buf, sizeof(buf));
+            printf("登录成功 and buf.flag = %s\n", buf.flag);
             client_login_success(fd, online_head, &message, buf);
             online_client(online_head, &message);
             print_online_client(online_head);
@@ -171,6 +172,7 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
         {
             strcpy(buf.flag, "登录失败");
             write(fd, &buf,sizeof(buf));
+            printf("登录失败 and buf.flag = %s\n", buf.flag);
         }
     }
     else if (0 == strcmp(buf.flag, GROUP_CHAT))
@@ -186,13 +188,13 @@ int handle_client_msg(int fd, MESSAGE buf, Login_STNODE * head, success_login *o
 /*
     接收客户端的信息
 */
-void recv_client_msg(fd_set *readfds,Login_STNODE * head, success_login *online_head)
+void recv_client_msg(fd_set *readfds, Login_STNODE * head, success_login *online_head)
 {
     int i = 0, n = 0;
     int clifd;
     MESSAGE message;
     memset(&message, 0,sizeof(message));
-    for (i = 0;i <= s_srv_ctx->cli_cnt;i++)
+    for (i = 0; i <= s_srv_ctx->cli_cnt; i++)
     {
         clifd = s_srv_ctx->clifds[i];
         if (clifd < 0)
@@ -250,7 +252,8 @@ printf("fuck!\n");
         printf("start select!\n");
         if (0 == strcmp("exit", server_cmd))
         {
-            strcpy(server_cmd, "\0");
+//            strcpy(server_cmd, "\0");
+            memset(server_cmd, 0, 40);
             destroy_Login_STNODE(head);
             destroy_success_login(online_head);
             server_uninit();
@@ -263,6 +266,7 @@ printf("fuck!\n");
 //            fprintf(stderr, "select error:%s.\n", strerror(errno));
 //            return;
 //        }
+        printf("新的输入或请求\n");
         if (0 >= retval)
         {
             if(errno == EINTR)
@@ -279,7 +283,7 @@ printf("fuck!\n");
         {
             printf("*监听客户端请求*\n");
             accept_client_proc(srvfd);/*监听客户端请求*/
-            printf("接受的套接字是 %d \n",srvfd);
+            printf("接受的套接字是 %d \n", srvfd);
         }
         else
         {
@@ -292,7 +296,7 @@ printf("fuck!\n");
 int main(int argc,char *argv[])
 {
     int srvfd;
-    signal(SIGINT, signHandler);
+    signal(SIGINT, signHandler);     //服务器捕获^C的信号
     Login_STNODE *register_file_head;
     success_login *online_clien_head;
     online_clien_head = (success_login *)malloc(sizeof(success_login));
@@ -329,8 +333,8 @@ err:
 //忽略ctrl +c 键的处理函数
 void signHandler(int signNO)
 {
-    printf("singal:%d \n",signNO);
-    printf("安全退出服务器请输入 exit ，谢谢.\n");
+    printf("singal:%d \n", signNO);
+    printf("安全退出服务器请输入 exit ，谢谢!\n");
     scanf("%s", server_cmd);
 }
 

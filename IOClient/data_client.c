@@ -35,7 +35,7 @@ int input_digit(char left, char right)
     int flag = 0;
     do
     {
-        fgets(ch,49,stdin);
+        fgets(ch, 49, stdin);
         you_hua(ch);
         flag = strlen(ch);
         li = ch[0];
@@ -46,8 +46,6 @@ int input_digit(char left, char right)
     while(!(li >= left && li <= right));
     return li - '0';
 }
-
-
 
 //处理客户端发来的群聊的请求
 void deal_with_group_chat()
@@ -78,7 +76,7 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
     }
     else
     {
-        memset(left,0,strlen(left));
+        memset(left, 0, strlen(left));
         for(k = 0 ; k < i ; k++)
         {
             left[k] = str[k];         //c左边的字符串赋给left[]
@@ -87,7 +85,7 @@ void cutStr(char str[], char left[], int n, char right[], int max, char c)
 
     left[i] = '\0';
 printf("left = %s\n", left);
-printf("i = %d n = %d\n",i ,n);
+printf("i = %d n = %d\n", i, n);
     for(j = i+1 ; j < max; j++)
     {
         if(str[j] == '\0')
@@ -113,33 +111,33 @@ printf("i = %d n = %d\n",i ,n);
 */
 void gettime(char *systime)
 {
-    char year[20],mon[10],day[10],hour[10],min[10],sec[10];
+    char year[20], mon[10], day[10], hour[10], min[10], sec[10];
     time_t rawtime;
     struct tm *tm;
     time ( &rawtime );
     tm = localtime ( &rawtime );
-    sprintf(year,"%d",tm->tm_year+1900);
+    sprintf(year, "%d", tm->tm_year+1900);
     if( tm->tm_mon + 1 < 10)
-        sprintf(mon,"0%d", tm->tm_mon + 1);
+        sprintf(mon, "0%d", tm->tm_mon + 1);
     else
-        sprintf(mon,"%d", tm->tm_mon + 1);
+        sprintf(mon, "%d", tm->tm_mon + 1);
     if( tm->tm_mday  < 10)
-        sprintf(day,"0%d", tm->tm_mday);
+        sprintf(day, "0%d", tm->tm_mday);
     else
-        sprintf(day,"%d", tm->tm_mday);
+        sprintf(day, "%d", tm->tm_mday);
     if( tm->tm_hour < 10)
-        sprintf(hour,"0%d", tm->tm_hour);
+        sprintf(hour, "0%d", tm->tm_hour);
     else
-        sprintf(hour,"%d", tm->tm_hour);
+        sprintf(hour, "%d", tm->tm_hour);
     if( tm->tm_min < 10)
-        sprintf(min,"0%d", tm->tm_min);
+        sprintf(min, "0%d", tm->tm_min);
     else
-        sprintf(min,"%d", tm->tm_min);
+        sprintf(min, "%d", tm->tm_min);
     if( tm->tm_sec < 10)
-        sprintf(sec,"0%d", tm->tm_sec);
+        sprintf(sec, "0%d", tm->tm_sec);
     else
-        sprintf(sec,"%d", tm->tm_sec);
-    sprintf(systime,"%s-%s-%s-%s:%s:%s", year, mon, day, hour, min, sec);//printf("systime = %s\n",systime);
+        sprintf(sec, "%d", tm->tm_sec);
+    sprintf(systime, "%s-%s-%s-%s:%s:%s", year, mon, day, hour, min, sec);//printf("systime = %s\n",systime);
 }
 
 /*登录成功之后处理接收的服务器信息*/
@@ -202,8 +200,8 @@ void handle_servermsg_afterlogin_success(int *sockfd)
         {
             gettime(systime);
             memset(str, 0, strlen(str));
-            sprintf(str,"%s在线用户:\n%s\n", systime, recvmessage.msg);
-            printf("%s() %s in lines %d\n", __PRETTY_FUNCTION__ , str,  __LINE__);
+            sprintf(str, "%s在线用户:\n%s\n", systime, recvmessage.msg);
+            printf("%s() %s in lines %d\n", __PRETTY_FUNCTION__ , str, __LINE__);
             continue;
         }
     }

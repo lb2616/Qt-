@@ -39,7 +39,7 @@ Status jugde_file_isEmpty(char filename[50])
 返回值:void,对地址进行操作，无须返回头节点
 **********************************************************/
 
-void generate_node_for_login(reg_person_info people,Login_STNODE *head)
+void generate_node_for_login(reg_person_info people, Login_STNODE *head)
 {
     Login_STNODE *p = (Login_STNODE *)malloc(sizeof(Login_STNODE)); //创建一个新结点p
     Login_STNODE *tmp = head;
@@ -58,13 +58,13 @@ void generate_node_for_login(reg_person_info people,Login_STNODE *head)
 意义:生成链表
 */
 //读信息到登录表中，从登录表中获取上次登录时间和次数
-void read_login_table(char filename[],Login_STNODE *head)
+void read_login_table(char filename[], Login_STNODE *head)
 {
     FILE *file = fopen(filename,"rb");
     reg_person_info people;
     if(NULL == file)
     {
-        printf(" %s() opening file <%s> occurs error in lines %d！",__PRETTY_FUNCTION__, filename, __LINE__);
+        printf(" %s() opening file <%s> occurs error in lines %d！", __PRETTY_FUNCTION__, filename, __LINE__);
         exit(0);
     }
     int flag = jugde_file_isEmpty(filename);
@@ -76,7 +76,7 @@ void read_login_table(char filename[],Login_STNODE *head)
             people.reg_pwd,
             people.reg_time
             );//从文件读入记录
-        generate_node_for_login(people,head);
+        generate_node_for_login(people, head);
     }//end of while
     fclose(file);
     file = NULL;
@@ -90,33 +90,33 @@ void read_login_table(char filename[],Login_STNODE *head)
 */
 void gettime(char *systime)
 {
-    char year[20],mon[10],day[10],hour[10],min[10],sec[10];
+    char year[20], mon[10], day[10], hour[10], min[10], sec[10];
     time_t rawtime;
     struct tm *tm;
     time ( &rawtime );
     tm = localtime ( &rawtime );
-    sprintf(year,"%d",tm->tm_year+1900);
+    sprintf(year, "%d", tm->tm_year+1900);
     if( tm->tm_mon + 1 < 10)
-        sprintf(mon,"0%d",tm->tm_mon + 1);
+        sprintf(mon, "0%d", tm->tm_mon + 1);
     else
-        sprintf(mon,"%d",tm->tm_mon + 1);
+        sprintf(mon, "%d", tm->tm_mon + 1);
     if( tm->tm_mday  < 10)
-        sprintf(day,"0%d",tm->tm_mday);
+        sprintf(day, "0%d", tm->tm_mday);
     else
-        sprintf(day,"%d",tm->tm_mday);
+        sprintf(day, "%d", tm->tm_mday);
     if( tm->tm_hour < 10)
-        sprintf(hour,"0%d",tm->tm_hour);
+        sprintf(hour, "0%d", tm->tm_hour);
     else
-        sprintf(hour,"%d",tm->tm_hour);
+        sprintf(hour, "%d", tm->tm_hour);
     if( tm->tm_min < 10)
-        sprintf(min,"0%d",tm->tm_min);
+        sprintf(min, "0%d", tm->tm_min);
     else
-        sprintf(min,"%d",tm->tm_min);
+        sprintf(min, "%d", tm->tm_min);
     if( tm->tm_sec < 10)
-        sprintf(sec,"0%d",tm->tm_sec);
+        sprintf(sec, "0%d", tm->tm_sec);
     else
-        sprintf(sec,"%d",tm->tm_sec);
-    sprintf(systime,"%s-%s-%s-%s:%s:%s",year,mon,day,hour,min,sec);//printf("systime = %s\n",systime);
+        sprintf(sec, "%d", tm->tm_sec);
+    sprintf(systime, "%s-%s-%s-%s:%s:%s", year, mon, day, hour, min, sec);//printf("systime = %s\n",systime);
 }
 
 /*
@@ -137,7 +137,7 @@ void write_register_table(MESSAGE message)
     FILE *fp = NULL;
     fp = fopen("./dat/register_info.txt","ab");
     judge_openfile("./dat/register_info.txt", fp);
-    fprintf(fp,"%-10d %-17s %-17s %-30s \n",
+    fprintf(fp, "%-10d %-17s %-17s %-30s \n",
             user_info.reg_id,
             user_info.reg_name,
             user_info.reg_pwd,
@@ -160,7 +160,7 @@ void judge_allocate(void *p)
 {
     if(NULL == p)
     {
-        printf("%s() phsical memory allocate failure in lines %d exit system!!\n",__PRETTY_FUNCTION__, __LINE__);
+        printf("%s() phsical memory allocate failure in lines %d exit system!!\n", __PRETTY_FUNCTION__, __LINE__);
         exit(0);
     }
     else
@@ -271,7 +271,7 @@ void print_online_client(success_login *head)
     success_login *p = head->next;
     while(NULL != p)
     {
-        printf("%d %d %s %s %d %d %d %s \n",p->perinfo.client_sockfd, p->perinfo.login_id,
+        printf("%d %d %s %s %d %d %d %s \n", p->perinfo.client_sockfd, p->perinfo.login_id,
                p->perinfo.login_name, p->perinfo.login_pwd, p->perinfo.login_status,
                p->perinfo.speak_status, p->perinfo.logincounts, p->perinfo.lastlogintime);
         p = p->next;
@@ -334,7 +334,7 @@ int get_min_id(success_login *head)
     int len = Get_Lines(head);            //获取记录条数
     int Lenarry[len];                    //记录条数作为数组长度
     get_id_to_array(head,Lenarry);       //将id存入数组中来
-    array_sort_small_to_big(Lenarry,len);//进行一轮冒泡排序
+    array_sort_small_to_big(Lenarry, len);//进行一轮冒泡排序
     int i = 0;            //遍历生成第一个未使用的最小的id编号
     for(i = 0; i < len ; i++)
     {
@@ -404,7 +404,7 @@ void destroy_Login_STNODE(Login_STNODE *head)
         p = q;
     }
     free(head);
-    printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
+    printf("%s() 释放结束!! line in %d \n", __PRETTY_FUNCTION__, __LINE__);
     head = NULL;
 }
 
@@ -424,7 +424,7 @@ void destroy_success_login(success_login *head)
         p = q;printf("222\n");
     }
     free(head);
-    printf("%s() 释放结束!! line in %d \n",__PRETTY_FUNCTION__, __LINE__);
+    printf("%s() 释放结束!! line in %d \n", __PRETTY_FUNCTION__, __LINE__);
     head = NULL;
 }
 

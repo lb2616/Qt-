@@ -1,5 +1,5 @@
 #include "client.h"
-
+int Init_nums = 2;
 void handle_recv_msg(int sockfd, MESSAGE buf) 
 {
     if (0 == strcmp(buf.flag, "注册成功")) 
@@ -13,18 +13,18 @@ void handle_recv_msg(int sockfd, MESSAGE buf)
         printf("in login cases client recv msg is:%s\n", buf.flag);
         printf(" %s(), name = %s\n ", __PRETTY_FUNCTION__, buf.name);
         strcpy(locname, buf.name);
-        sprintf(chat_log,"./chat_records/%s.txt",buf.name);
+        sprintf(chat_log, "./chat_records/%s.txt", buf.name);
         ui_mainchat(sockfd, &buf);
     }
     else if (0 == strcmp(buf.flag, "登录失败"))
     {
         printf("fuck is failed client recv msg is:%s\n", buf.flag);
+        cirlce_login_failed(sockfd, &Init_nums, buf);
     }
 }
 
 void handle_connection(int sockfd)
 {
-//    char sendline[MAXLINE],recvline[MAXLINE];
     MESSAGE message;
     int maxfdp ;
     fd_set readfds;
@@ -35,7 +35,7 @@ void handle_connection(int sockfd)
     while (1) 
     {
         FD_ZERO(&readfds);
-        FD_SET(sockfd,&readfds);
+        FD_SET(sockfd, &readfds);
         maxfdp = sockfd;
 
 //        tv.tv_sec = 5;
@@ -61,18 +61,16 @@ void handle_connection(int sockfd)
 
         if (FD_ISSET(sockfd, &readfds))
         {
-
-            n = read(sockfd,&message,MAXLINE);
+            n = read(sockfd, &message, MAXLINE);
             if (n <= 0)
             {
-                fprintf(stderr,"client: server is closed,bye,bye!!.\n");
+                fprintf(stderr,"client: server is closed,bye,bye!!\n");
                 close(sockfd);
                 FD_CLR(sockfd, &readfds);
                 return;
             }
             handle_recv_msg(sockfd, message);
         }
-//        handle_recv_msg(sockfd, message);
     }
 }
 
@@ -90,7 +88,7 @@ int main(int argc,char *argv[])
     inet_pton(AF_INET, IPADDRESS, &servaddr.sin_addr);
 
     int retval = 0;
-    retval = connect(sockfd,(struct sockaddr*)&servaddr,sizeof(servaddr));
+    retval = connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
     if (retval < 0) 
     {
         fprintf(stderr, "connect fail,error:%s\n", strerror(errno));
